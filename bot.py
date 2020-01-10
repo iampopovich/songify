@@ -4,14 +4,29 @@ import telebot, telebot.Types
 import datetime
 import json
 import re
+import os
+import sys
 
 def getConfig():
-	pass
+	try: 
+		# token, proxy = None, None
+		file = None
+		cwd = os.getcwd()
+		for f in os.listdir(cwd):
+			file = f if f.endswith(".cfg") else None
+		with open(file, 'r') as f: #потенциальная проблема из-за отсутствия файла
+			parsedConfig = json.load(f)
+		return (parsedConfig[token])
+	except Exception as ex:
+		raise ex
 
-bot = telebot.TeleBot()
+bot = None
 
 def main():
-	pass
+	# add proxy 
+	token = getConfig()
+		bot = telebot.TeleBot(token)
+		pass
 
 @bot.message_handler(regex = "")
 def saveSong(message):
@@ -25,5 +40,9 @@ def saveSong(message):
 	bot.send_message(message.chat.id, info, callback = kbStatus)
 	bot.delete_message(message.message_id)
 
+@bot.message_handler(cotent_types=['text'])
+def reportShit(message):
+	bot.send_message(message.chat.id, 'SHIT')
+	
 if __name__ == '__main__':
 	main()
