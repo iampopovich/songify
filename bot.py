@@ -1,5 +1,5 @@
 #version: v0.0.2
-import telebot, telebot.Types 
+from telebot import TeleBot, types 
 # import time
 import datetime
 import json
@@ -25,24 +25,30 @@ bot = None
 def main():
 	# add proxy 
 	token = getConfig()
-		bot = telebot.TeleBot(token)
-		pass
+	bot = TeleBot(token)
+	bot.polling()
+	pass
 
 @bot.message_handler(regex = "")
 def saveSong(message):
 	deadline = datetime.datetime.now() + datetime.timedelta(days = 7)
 	info = '{}\nПесня добавлена.\nТвой дедлайн : {}'.format(message.text, deadline)
-	kbStatus = Types.TeleBotCallbackKeoard()
-	textDoneButton = Types.TeleBotCallbackButton(text = 'Lyrics X', callback_data = 'Lyrics +')
-	tabsDoneButton = Types.TelebotCallbackButton(text = 'Tabs X', callback_data = 'Tabs +')
+	kbStatus = types.InlineKeyboardMarkup()
+	textDoneButton = types.InlineKeyboardButton(text = 'Lyrics X', callback_data = 'Lyrics +')
+	tabsDoneButton = types.InlineKeyboardButton(text = 'Tabs X', callback_data = 'Tabs +')
 	kbStatus.add(textDoneButton)
 	kbStatus.add(tabsDoneButton)
-	bot.send_message(message.chat.id, info, callback = kbStatus)
+	kbStatus.row(textDoneButton,tabsDoneButton)
+	bot.send_message(message.chat.id, info, reply_markup = kbStatus)
 	bot.delete_message(message.message_id)
 
 @bot.message_handler(cotent_types=['text'])
 def reportShit(message):
 	bot.send_message(message.chat.id, 'SHIT')
 	
+@bot.message_handler(commands = ['get_stats'])
+def getBotStats(message):
+	pass
+
 if __name__ == '__main__':
 	main()
