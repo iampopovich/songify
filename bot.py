@@ -1,4 +1,4 @@
-#version: v0.0.2
+#version: v0.0.3
 from telebot import TeleBot, types 
 # import time
 import datetime
@@ -38,7 +38,7 @@ def saveSong(message):
 	tabsDoneButton = types.InlineKeyboardButton(text = 'Tabs X', callback_data = 'Tabs +')
 	kbStatus.add(textDoneButton)
 	kbStatus.add(tabsDoneButton)
-	kbStatus.row(textDoneButton,tabsDoneButton)
+	kbStatus.row(textDoneButton,tabsDoneButton) # фича конкретно этого прототипа . будет ли юзабельнее бургерных кнопок
 	bot.send_message(message.chat.id, info, reply_markup = kbStatus)
 	bot.delete_message(message.message_id)
 
