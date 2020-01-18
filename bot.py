@@ -1,6 +1,7 @@
 #version: v0.0.4
 from telebot import TeleBot, types
 import dbworker
+import helper
 import logging # in v0.0.5
 # import time
 import datetime
@@ -29,9 +30,9 @@ config = getConfig()
 bot = TeleBot(config['token'])
 
 def main():
-	# global config
-	# connection = dbworker.getConnection(config[database])
+	global config
 	global bot
+	# connection = dbworker.getConnection(config[database])
 	# while True:
 	# try: 
 	bot.polling(none_stop = True)
@@ -39,7 +40,7 @@ def main():
 	# 	logging.error(e)
 	# 	print(e)
 
-@bot.message_handler(regexp = "https?")
+@bot.message_handler(regexp = "https?") #look for advanced url regexp  
 def saveSong(message):
 	deadline = datetime.datetime.now() + datetime.timedelta(days = 7)
 	info = '{}\nПесня добавлена.\nТвой дедлайн : {}'.format(message.text, deadline)
@@ -49,10 +50,6 @@ def saveSong(message):
 	kbStatus.row(textDoneButton,tabsDoneButton)
 	bot.send_message(message.chat.id, info, reply_markup = kbStatus)
 	bot.delete_message(message.chat.id, message.message_id)
-
-@bot.message_handler(content_types=['text'])
-def reportShit(message):
-	bot.send_message(message.chat.id, 'SHIT')
 	
 @bot.message_handler(commands = ['get_stats'])
 def getBotStats(message):
@@ -60,7 +57,12 @@ def getBotStats(message):
 
 @bot.message_handler(commands = ['help'])
 def help(message):
+	bot.send_message(message.chat.id, helper.getHelp())
 	pass
+
+@bot.message_handler(content_types=['text'])
+def reportShit(message):
+	bot.send_message(message.chat.id, 'SHIT')
 
 def getWeeklyStats():
 	pass
