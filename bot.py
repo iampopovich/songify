@@ -1,9 +1,8 @@
-#version: v0.0.4
+#version: v0.0.5
 from telebot import TeleBot, types
 import dbworker
 import helper
-import logging # in v0.0.5
-# import time
+import logging
 import datetime
 import json
 import re
@@ -23,8 +22,7 @@ def getConfig():
 	except Exception as ex:
 		raise ex
 
-# def initBot(config):
-# 	return TeleBot(config['token'])
+# logging.baseConfig(filename="debug.log", level=logging.DEBUG) # read the logging doc
 
 config = getConfig()
 bot = TeleBot(config['token'])
@@ -32,7 +30,7 @@ bot = TeleBot(config['token'])
 def main():
 	global config
 	global bot
-	# connection = dbworker.getConnection(config[database])
+	connection = dbworker.getConnection(config[database])
 	# while True:
 	# try: 
 	bot.polling(none_stop = True)
@@ -44,11 +42,12 @@ def main():
 def saveSong(message):
 	deadline = datetime.datetime.now() + datetime.timedelta(days = 7)
 	info = '{}\nПесня добавлена.\nТвой дедлайн : {}'.format(message.text, deadline)
-	kbStatus = types.InlineKeyboardMarkup()
-	textDoneButton = types.InlineKeyboardButton(text = 'Lyrics X', callback_data = 'Lyrics +')
-	tabsDoneButton = types.InlineKeyboardButton(text = 'Tabs X', callback_data = 'Tabs +')
-	kbStatus.row(textDoneButton,tabsDoneButton)
-	bot.send_message(message.chat.id, info, reply_markup = kbStatus)
+	statusKeyboard = types.InlineKeyboardMarkup()
+	button1 = types.InlineKeyboardButton(text = 'Lyrics X', callback_data = 'Lyrics +')
+	button2 = types.InlineKeyboardButton(text = 'Tabs X', callback_data = 'Tabs +')
+	statusKeyboard.row(button1,button2)
+	# dbworker.insertData(connection, ','.join(message.chat.id, message.text, deadline))
+	bot.send_message(message.chat.id, info, reply_markup = statusKeyboard)
 	bot.delete_message(message.chat.id, message.message_id)
 	
 @bot.message_handler(commands = ['get_stats'])
