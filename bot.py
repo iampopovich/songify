@@ -23,14 +23,14 @@ def getConfig():
 		raise ex
 
 # logging.baseConfig(filename="debug.log", level=logging.DEBUG) # read the logging doc
-
+URLREGEXP = "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
 config = getConfig()
 bot = TeleBot(config['token'])
 
 def main():
 	global config
 	global bot
-	connection = dbworker.getConnection(config[database])
+	# connection = dbworker.getConnection(config[database])
 	# while True:
 	# try: 
 	bot.polling(none_stop = True)
@@ -38,9 +38,9 @@ def main():
 	# 	logging.error(e)
 	# 	print(e)
 
-@bot.message_handler(regexp = "https?") #look for advanced url regexp  
+@bot.message_handler(regexp = URLREGEXP)  
 def saveSong(message):
-	deadline = datetime.datetime.now() + datetime.timedelta(days = 7)
+	deadline = datetime.date.today() + datetime.timedelta(days = 7)
 	info = '{}\nПесня добавлена.\nТвой дедлайн : {}'.format(message.text, deadline)
 	statusKeyboard = types.InlineKeyboardMarkup()
 	button1 = types.InlineKeyboardButton(text = 'Lyrics X', callback_data = 'Lyrics +')
