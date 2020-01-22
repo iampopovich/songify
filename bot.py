@@ -15,22 +15,25 @@ def getConfig():
 		file = None
 		cwd = os.getcwd()
 		for f in os.listdir(cwd):
-			if f.endswith(".cfg"): file = f
+			if f.endswith('.cfg'): file = f
 		with open(file, 'r') as f: #потенциальная проблема из-за отсутствия файла
 			parsedConfig = json.load(f)
 		return (parsedConfig)
 	except Exception as ex:
 		raise ex
 
-# logging.baseConfig(filename="debug.log", level=logging.DEBUG) # read the logging doc
-URLREGEXP = "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
+# logging.baseConfig(filename='debug.log', level=logging.DEBUG) # read the logging doc
+URLREGEXP = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 config = getConfig()
 bot = TeleBot(config['token'])
+connection = dbworker.getConnection(config[database])
 
 def main():
 	global config
 	global bot
-	# connection = dbworker.getConnection(config[database])
+	global connection
+	# if(connection) : pass
+	# else return 'no database connection'
 	# while True:
 	# try: 
 	bot.polling(none_stop = True)
@@ -50,6 +53,15 @@ def saveSong(message):
 	bot.send_message(message.chat.id, info, reply_markup = statusKeyboard)
 	bot.delete_message(message.chat.id, message.message_id)
 	
+@bot.message_handler(commands = ['start'])
+def startBot(message):
+	global connection
+	dbworker.insertData(connection, 'users', message.chat.id)
+	#добавить юник на чатИД , при перестарте не записывать повторно
+	#добавить поле datetime  создани записи пользователя
+	#походу придется добавить еулу
+	
+
 @bot.message_handler(commands = ['get_stats'])
 def getBotStats(message):
 	pass
