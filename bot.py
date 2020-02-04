@@ -12,18 +12,21 @@ import sys
 def getConfig():
 	try:
 		# token, proxy = None, None
-		file = None
 		cwd = os.getcwd()
 		for f in os.listdir(cwd):
-			if f.endswith('.cfg'): file = f
-		with open(file, 'r') as f: #потенциальная проблема из-за отсутствия файла
-			parsedConfig = json.load(f)
-		return (parsedConfig)
+			if f.endswith('.cfg'):
+				try:
+					with open(file, 'r') as f:
+						parsedConfig = json.load(f)
+					return (parsedConfig)
+				except Exception as ex:
+					print ("Seems like something wrong with config file...")
+					sys.exit()
 	except Exception as ex:
+		raise ex
+	finally:
 		print("Seems like config file's missed...")
 		sys.exit()
-		return None
-		# raise ex
 
 # logging.baseConfig(filename='debug.log', level=logging.DEBUG) # read the logging doc
 URLREGEXP = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
