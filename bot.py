@@ -20,7 +20,10 @@ def getConfig():
 			parsedConfig = json.load(f)
 		return (parsedConfig)
 	except Exception as ex:
-		raise ex
+		print("Seems like config file's missed...")
+		sys.exit()
+		return None
+		# raise ex
 
 # logging.baseConfig(filename='debug.log', level=logging.DEBUG) # read the logging doc
 URLREGEXP = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
