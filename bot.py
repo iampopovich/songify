@@ -58,24 +58,38 @@ def saveSong(message):
 	# dbworker.insertData(connection, ','.join(message.chat.id, message.text, deadline))
 	bot.send_message(message.chat.id, info, reply_markup = statusKeyboard)
 	bot.delete_message(message.chat.id, message.message_id)
-	
+
+
 @bot.message_handler(commands = ['start'])
 def startBot(message):
 	global connection
-	dbworker.insertData(connection, 'users', message.chat.id)
+	if dbworker.checkData(connection, "users", "userID", message.chat.id):
+		bot.send_message(message.chat.id, "Вы уже пользовались ботом ранее. Запросите список песен командой /songs")
+	else: dbworker.insertData(connection, 'users', message.chat.id)
+	return 
+
 	#добавить юник на чатИД , при перестарте не записывать повторно
 	#добавить поле datetime  создани записи пользователя
 	#походу придется добавить еулу
 	
-
 @bot.message_handler(commands = ['get_stats'])
 def getBotStats(message):
-	pass
+	dataset = dbworker.getData(connection, statistic, userID, message.chat.id)
+	if len(dataset) != 0 : bot.send_message(message.chat.id, "\n".join(dataset))
+	else: bot.send_message(message.chat.id, "Статистики в базе не найдено")\
+	return None
+
+@bot.message_handler(commands = ['songs'])
+def getSongs(message):
+	dataset = dbworker.getData(connection, songs, userID, message.chat.id)
+	if len(dataset) != 0 : bot.send_message(message.chat.id, "\n".join(dataset))
+	else: bot.send_message(message.chat.id, "Песен в базе не найдено")\
+	return None
 
 @bot.message_handler(commands = ['help'])
 def help(message):
 	bot.send_message(message.chat.id, helper.getHelp())
-	pass
+	return None
 
 @bot.message_handler(content_types=['text'])
 def reportShit(message):

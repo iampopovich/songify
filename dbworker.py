@@ -11,12 +11,19 @@ def checkSchema(connection):
 	#else return false and abort connection
 	pass
 
+#return bool value if information exists or not 
 def checkData(connection,table,column,data):
 	cursor = connection.cursor()
 	query = "select * from {0} where {1} = {2}".format(table,column,data)
 	cursor.execute(query)
-	if len(cursor.fetchall()) != 0: return True 
-	else: return False 
+	return len(cursor.fetchall()) != 0
+
+#return dataset if it exists 
+def getData(connection, table, column, data):
+	cursor = connection.cursor()
+	query = "select * from {0} where {1} = {2}".format(table, column , data)
+	cursor.execute()
+	return cursor.fetchall()
 
 def insertData(connection, data):
 	try:
