@@ -11,6 +11,12 @@ def checkSchema(connection):
 	#else return false and abort connection
 	pass
 
+def checkData(connection,table,column,data):
+	cursor = connection.cursor()
+	query = "select * from {0} where {1} = {2}".format(table,column,data)
+	cursor.execute(query)
+	if len(cursor.fetchall()) != 0: return True 
+	else: return False 
 
 def insertData(connection, data):
 	try:
