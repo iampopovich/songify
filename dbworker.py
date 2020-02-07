@@ -1,4 +1,5 @@
 import sqlite3
+#В дбворкер можно прокинуть совершенно любой запрос . как-то надо экранировать левые запросы
 
 def getConnection(database):
 	try:
@@ -12,23 +13,20 @@ def checkSchema(connection):
 	pass
 
 #return bool value if information exists or not 
-def checkData(connection,table,column,data):
+def checkData(connection,query):
 	cursor = connection.cursor()
-	query = "select * from {0} where {1} = {2}".format(table,column,data)
 	cursor.execute(query)
 	return len(cursor.fetchall()) != 0
 
 #return dataset if it exists 
-def getData(connection, table, column, data):
+def getData(connection, query):
 	cursor = connection.cursor()
-	query = "select * from {0} where {1} = {2}".format(table, column , data)
-	cursor.execute()
+	cursor.execute(query)
 	return cursor.fetchall()
 
-def insertData(connection, data):
+def insertData(connection, query):
 	try:
 		cursor = connection.cursor()
-		query = "insert into userSongs (chatID, songName, deadlineBefore) values (%s)" %data
 		cursor.execute(query)
 		connection.commit()
 	except Exception as e:
