@@ -11,7 +11,7 @@ def getConnection(database):
 	except Exception as e:
 		return e
 
-def validateDatabase(connection):
+def validateDatabase(database):
 	# cursor = connection.cursor()
 	# query = "select * from "
 	# tables = cursor.execute(query)
@@ -21,31 +21,47 @@ def validateDatabase(connection):
 	pass
 
 #return bool if information exists or not 
-def checkData(connection,query):
-	cursor = connection.cursor()
-	cursor.execute(query)
-	return len(cursor.fetchall()) != 0
+def checkData(database,query):
+	try:
+		connection = getConnection(database)
+		cursor = connection.cursor()
+		cursor.execute(query)
+		connection.close()
+		return len(cursor.fetchall()) != 0
+	except Exception as ex:
+		raise ex
+	finally:
+		connection.close()
 
 #return dataset if it exists 
-def getData(connection, query):
-	cursor = connection.cursor()
-	cursor.execute(query)
-	return cursor.fetchall()
-
-def insertData(connection, query):
+def getData(database, query):
 	try:
+		connection = getConnection(database)
+		cursor = connection.cursor()
+		cursor.execute(query)
+		connection.close()
+		return cursor.fetchall()
+	except Exception as ex:
+		raise ex
+	finally:
+		connection.close()
+
+def insertData(database, query):
+	try:
+		connection = getConnection(database)
 		cursor = connection.cursor()
 		cursor.execute(query)
 		connection.commit()
-	except Exception as e:
-		print(e)
-		connection.destroy()
+		connection.close()
+	except Exception as ex:
+		raise ex
+	finally:
+		connection.close()
+
+def uploadData(database):
 	pass
 
-def uploadData(connection):
-	pass
-
-def closeCOnnection(connection):
+def closeCOnnection(database):
 	connection.close()
 	return None
 
