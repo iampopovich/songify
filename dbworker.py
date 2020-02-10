@@ -9,6 +9,7 @@ def getConnection(database):
 			print("Seems like something wrong with database file...")
 			sys.exit(0)
 	except Exception as e:
+		connection.close()
 		return e
 
 def validateDatabase(database):
@@ -26,7 +27,6 @@ def checkData(database,query):
 		connection = getConnection(database)
 		cursor = connection.cursor()
 		cursor.execute(query)
-		connection.close()
 		return len(cursor.fetchall()) != 0
 	except Exception as ex:
 		raise ex
@@ -39,7 +39,6 @@ def getData(database, query):
 		connection = getConnection(database)
 		cursor = connection.cursor()
 		cursor.execute(query)
-		connection.close()
 		return cursor.fetchall()
 	except Exception as ex:
 		raise ex
