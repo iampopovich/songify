@@ -3,16 +3,24 @@ import sqlite3
 
 def getConnection(database):
 	try:
-		return sqlite3.connect(database)
+		connection = sqlite3.connect(database)
+		if validateDatabase(connection): return connection
+		else: 
+			print("Seems like something wrong with database file...")
+			sys.exit(0)
 	except Exception as e:
 		return e
 
-def checkSchema(connection):
-	#if schema is valid return true
-	#else return false and abort connection
+def validateDatabase(connection):
+	# cursor = connection.cursor()
+	# query = "select * from "
+	# tables = cursor.execute(query)
+	# if ["users","songs"].sort() == tables.fetchall().sort():
+	# 	return True
+	return True #return True by default till i find a way to validate database file
 	pass
 
-#return bool value if information exists or not 
+#return bool if information exists or not 
 def checkData(connection,query):
 	cursor = connection.cursor()
 	cursor.execute(query)

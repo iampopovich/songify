@@ -38,8 +38,6 @@ def main():
 	global config
 	global bot
 	global connection
-	# if(connection) : pass
-	# else return 'no database connection'
 	# while True:
 	# try: 
 	bot.polling(none_stop = True)
