@@ -1,8 +1,8 @@
-#version: v0.0.6
+#version: v0.0.62
 from telebot import TeleBot, types
 import dbworker
 import helper
-import logging
+# import logging # добавлю позже
 import datetime
 import json
 import re
@@ -37,45 +37,47 @@ def main():
 
 @bot.message_handler(regexp = URLREGEXP)  
 def saveSong(message):
+	global config
 	deadline = datetime.date.today() + datetime.timedelta(days = 7)
 	info = '{}\nПесня добавлена.\nТвой дедлайн : {}'.format(message.text, deadline)
 	statusKeyboard = types.InlineKeyboardMarkup()
 	button1 = types.InlineKeyboardButton(text = 'Lyrics X', callback_data = 'Lyrics +')
 	button2 = types.InlineKeyboardButton(text = 'Tabs X', callback_data = 'Tabs +')
 	statusKeyboard.row(button1,button2)
-	# dbworker.insertData(connection, ','.join(message.chat.id, message.text, deadline))
 	bot.send_message(message.chat.id, info, reply_markup = statusKeyboard)
 	bot.delete_message(message.chat.id, message.message_id)
-
-
+	try:
+		query = 'insert into userSongs values({},\'{}\',{},{},{})'.format(message.chat.id, message.text, deadline,0,0)
+		dbworker.insertData(config['database'], query)
+	except Exception as ex:
+		print (ex)
+		bot.send_message(message.chat.id, 'песня не записана в базу')
+	
 @bot.message_handler(commands = ['start'])
 def startBot(message):
 	global config
 	query = 'select * from users where chatID = {} limit 1'.format(message.chat.id)
-	if dbworker.checkData(config["database"],query):
+	if dbworker.checkData(config['database'],query):
 		bot.send_message(message.chat.id, 'Вы уже пользовались ботом ранее. Запросите список песен командой /songs')
 	else:
-		query = 'insert into users values ({},\"\")'.format(message.chat.id)
-		dbworker.insertData(config["database"], query)
-	return None
+		query = 'insert into users values ({},\'\')'.format(message.chat.id)
+		dbworker.insertData(config['database'], query)
 	
 @bot.message_handler(commands = ['get_stats'])
 def getBotStats(message):
 	global config
 	query = 'select * from statistics where userID = {}'.format(message.chat.id)
-	dataset = dbworker.getData(config["database"],query)
+	dataset = dbworker.getData(config['database'],query)
 	if len(dataset) != 0 : bot.send_message(message.chat.id, '\n'.join(dataset))
 	else: bot.send_message(message.chat.id, 'Статистики в базе не найдено')
-	return None
 
 @bot.message_handler(commands = ['songs'])
 def getSongs(message):
 	global config
 	query = 'select * from userSongs where chatID = {}'.format(message.chat.id)
-	dataset = dbworker.getData(config["database"], query)
-	if len(dataset) != 0 : bot.send_message(message.chat.id, '\n'.join(dataset))
+	dataset = dbworker.getData(config['database'], query)
+	if len(dataset) != 0 : bot.send_message(message.chat.id, '\n'.join(map(str,dataset)))
 	else: bot.send_message(message.chat.id, 'Песен в базе не найдено')
-	return None
 
 @bot.message_handler(commands = ['help'])
 def help(message):
@@ -88,7 +90,6 @@ def reportShit(message):
 
 def getWeeklyStats():
 	pass
-
 
 if __name__ == '__main__':
 	main()
